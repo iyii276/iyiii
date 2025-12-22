@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" href="image.png" type="image/x-icon">
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="fjd.css">
+</head>
+<body>
+
+<header>
+  <h2>Client Requests</h2>
+  <div>
+    <input id="search" placeholder="Search..." />
+    <a href="/adesmine/logout">LOGOUT</a>
+  </div>
+</header>
+
+<div class="grid" id="cards">
+  <% requests.forEach(req => { %>
+    <div class="card">
+      <span class="status <%= req.status %>"><%= req.status %></span>
+      <small><%= req.createdAt.toLocaleString() %></small>
+
+      <% Object.entries(req.data).forEach(([k,v]) => { %>
+        <p><strong><%= k %>:</strong> <%= v %></p>
+      <% }) %>
+
+      <div class="actions">
+        <% if (req.status === 'pending') { %>
+          <form method="POST" action="/adesmine/complete/<%= req._id %>">
+            <button class="success">Complete</button>
+          </form>
+        <% } %>
+
+        <form method="POST" action="/adesmine/delete/<%= req._id %>">
+          <button class="danger">Delete</button>
+        </form>
+      </div>
+    </div>
+  <% }) %>
+</div>
+
+<div class="pagination">
+  <% for (let i = 1; i <= totalPages; i++) { %>
+    <a href="?page=<%= i %>"><%= i %></a>
+  <% } %>
+</div>
+
+<script>
+  const search = document.getElementById('search');
+  search.addEventListener('input', () => {
+    const q = search.value.toLowerCase();
+    document.querySelectorAll('.card').forEach(card => {
+      card.style.display = card.innerText.toLowerCase().includes(q)
+        ? 'block'
+        : 'none';
+    });
+  });
+</script>
+</body>
+</html>
